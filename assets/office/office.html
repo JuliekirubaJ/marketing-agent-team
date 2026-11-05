@@ -1,0 +1,401 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Marketing Agent Office</title>
+<style>
+  html,body{margin:0;background:#F0EEE6;}
+  canvas{image-rendering:pixelated;display:block;margin:0 auto;}
+  pre{white-space:pre-wrap;word-break:break-all;}
+</style></head>
+<body>
+<script>
+// Pixel-art office scene of the marketing agent team, encoded as a looping GIF.
+// Open with #live to watch it, #frame=N to see one frame, no hash to encode (output in <pre id="gif">).
+const W = 480, H = 300, SCALE = 2, N = 48, DELAY = 10; // 48 frames x 100 ms
+
+const P = {
+  wall:'#F0EEE6', wall2:'#E8E2D6', floor:'#E6D9C6', floorLine:'#DFD0BB', shadow:'#D2BFA6',
+  ink:'#3D3929', ink2:'#6B675E', cream:'#FAF9F5', white:'#FFFFFF',
+  clay:'#D97757', clayD:'#B85C3E', clayL:'#EDB9A3', rug:'#F2D3C4',
+  wood:'#C9A27A', woodD:'#9E7A55', woodL:'#DFC3A0',
+  screen:'#2B2A27', screenL:'#4A4740', glow:'#F3E3C3',
+  green:'#7E9C6B', greenD:'#5C7A4E', greenL:'#B4C99A', pot:'#B8704A',
+  sky:'#CFE0E6', skyD:'#AFC6CF', hill:'#BFD0A6',
+  ochre:'#D4A24C', sage:'#8DA47E', blue:'#6A8CAF', plum:'#9C6B98', teal:'#5E9C96',
+  rose:'#D98C8C', olive:'#A3A35A', red:'#C8553D', brown:'#8A5A3B', slate:'#7D8590', yellow:'#EBC765',
+  skin1:'#F1CBA8', skin2:'#DDA67E', skin3:'#B0764F', skin4:'#7E5136',
+  hair1:'#3B2A1E', hair2:'#6E4B2F', hair3:'#B98048', hair4:'#2A2926', hair5:'#CDBFAB'
+};
+const PAL = Object.keys(P);           // palette order = GIF color index order
+const TRANSP = 63;                    // reserved transparent index (palette must stay < 63 colors)
+
+const FONT = {
+ A:'010101111101101',B:'110101110101110',C:'011100100100011',D:'110101101101110',E:'111100110100111',
+ F:'111100110100100',G:'011100101101011',H:'101101111101101',I:'111010010010111',J:'001001001101010',
+ K:'101101110101101',L:'100100100100111',M:'101111111101101',N:'110101101101101',O:'010101101101010',
+ P:'110101110100100',Q:'010101101110011',R:'110101110101101',S:'011100010001110',T:'111010010010010',
+ U:'101101101101111',V:'101101101101010',W:'101101111111101',X:'101101010101101',Y:'101101010010010',
+ Z:'111001010100111','0':'111101101101111','1':'010110010010111','2':'110001010100111','3':'110001010001110',
+ '4':'101101111001001','5':'111100110001110','6':'011100111101111','7':'111001010010010','8':'111101111101111',
+ '9':'111101111001110','/':'001001010100100','+':'000010111010000','-':'000000111000000','.':'000000000000010',
+ '*':'000000010000000','=':'000111000111000','!':'010010010000010',' ':'000000000000000'
+};
+
+const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+const g = cv.getContext('2d', { willReadFrequently: true });
+g.imageSmoothingEnabled = false;
+
+function R(x, y, w, h, c) { if (w <= 0 || h <= 0) return; g.fillStyle = P[c]; g.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); }
+function px(x, y, c) { R(x, y, 1, 1, c); }
+function tw(s, sc = 1) { return s.length * 4 * sc - sc; }
+function txt(s, x, y, c, sc = 1) {
+  for (const ch of s.toUpperCase()) {
+    const gl = FONT[ch];
+    if (gl) for (let r = 0; r < 5; r++) for (let q = 0; q < 3; q++) if (gl[r * 3 + q] === '1') R(x + q * sc, y + r * sc, sc, sc, c);
+    x += 4 * sc;
+  }
+}
+function line(x0, y0, x1, y1, c) {
+  x0 = Math.round(x0); y0 = Math.round(y0); x1 = Math.round(x1); y1 = Math.round(y1);
+  const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+  let e = dx + dy;
+  for (;;) { px(x0, y0, c); if (x0 === x1 && y0 === y1) break; const e2 = 2 * e; if (e2 >= dy) { e += dy; x0 += sx; } if (e2 <= dx) { e += dx; y0 += sy; } }
+}
+const cyc = (f, period, phase = 0) => ((f + phase) % period + period) % period;
+
+// ---------- teams ----------
+const TEAMS = [
+  { n:'STRATEGY',          c:'clay',  k:5, s:'kanban' },
+  { n:'CONTENT',           c:'ochre', k:6, s:'text'   },
+  { n:'SOCIAL',            c:'blue',  k:4, s:'hearts' },
+  { n:'SEO + AI SEARCH',   c:'teal',  k:5, s:'line'   },
+  { n:'PAID + PERFORMANCE',c:'plum',  k:4, s:'bars'   },
+  { n:'OPERATIONS',        c:'slate', k:3, s:'grid'   },
+  { n:'EVENTS + WEBINARS', c:'rose',  k:2, s:'play'   },
+  { n:'LIFECYCLE',         c:'sage',  k:2, s:'mail'   },
+  { n:'SALES + PARTNERS',  c:'olive', k:2, s:'card'   },
+  { n:'BRAND + PR',        c:'red',   k:1, s:'mega'   },
+  { n:'ANALYTICS',         c:'brown', k:2, s:'pie'    },
+];
+// layout: row0 = 4 pods, row1 = pod | orchestrator | pod, row2 = 5 pods
+const ROWY = [80, 152, 224];
+const PODS = [];
+[[0,0,120],[1,120,120],[2,240,120],[3,360,120]].forEach(([t,x,w]) => PODS.push({ t:TEAMS[t], x, y:ROWY[0], w }));
+PODS.push({ t:TEAMS[4], x:0,   y:ROWY[1], w:120 });
+PODS.push({ t:TEAMS[5], x:360, y:ROWY[1], w:120 });
+[6,7,8,9,10].forEach((t, i) => PODS.push({ t:TEAMS[t], x:i * 96, y:ROWY[2], w:96 }));
+let gi0 = 0;
+for (const p of PODS) { p.g0 = gi0; gi0 += p.t.k; const lw = tw(p.t.n) + 8 + 11; p.sx = p.x + Math.floor((p.w - lw) / 2); p.scx = p.sx + (lw - 11) / 2; p.scy = p.y + 6; }
+const ORCH = { x:120, y:ROWY[1], w:240, cx:240 };
+
+// ---------- paper planes ----------
+const PLANES = [0, 3, 6, 9, 1, 5, 10, 2].map((pod, j) => ({ pod, f0: j * 6, dur: 16 }));
+function planeState(pl, f) {
+  const t = cyc(f, N, -pl.f0);
+  if (t > pl.dur + 3) return null;
+  const p = PODS[pl.pod];
+  const x0 = ORCH.cx, y0 = ORCH.y + 4, x1 = p.scx, y1 = p.scy - 4;
+  const u = Math.min(1, t / pl.dur), arc = Math.sin(Math.PI * u) * 22;
+  return { t, u, x: x0 + (x1 - x0) * u, y: y0 + (y1 - y0) * u - arc, dir: x1 >= x0 ? 1 : -1, p, landed: t >= pl.dur };
+}
+
+// ---------- screens ----------
+function screenArt(type, sx, sy, f, gi) {
+  switch (type) {
+    case 'kanban': {
+      [[1,1],[1,3],[4,1],[7,1],[7,3]].forEach(([x,y]) => R(sx+x, sy+y, 2, 1, 'glow'));
+      const c = Math.floor(cyc(f, 24, gi * 5) / 8); R(sx + 1 + c * 3, sy + 5, 2, 1, 'clay'); break; }
+    case 'text': {
+      const L = cyc(f, 24, gi * 6);
+      R(sx+1, sy+1, Math.min(8, L), 1, 'glow'); R(sx+1, sy+3, Math.min(8, Math.max(0, L - 8)), 1, 'glow');
+      const l3 = Math.max(0, Math.min(5, L - 16)); R(sx+1, sy+5, l3, 1, 'glow');
+      if (cyc(f, 4) < 2) px(sx + 1 + l3, sy + 5, 'ochre'); break; }
+    case 'hearts': {
+      for (let k = 0; k < 3; k++) { const y = sy + 6 - Math.floor(cyc(f, 14, gi * 3 + k * 5) / 2); const x = sx + 1 + k * 3;
+        if (y >= sy) { px(x, y, k === 1 ? 'blue' : 'rose'); px(x + 1, y, k === 1 ? 'blue' : 'rose'); if (y + 1 < sy + 7) px(x, y + 1, k === 1 ? 'blue' : 'rose'); } }
+      break; }
+    case 'line': {
+      const v = [5, 4, 4, 2, 1], n = 1 + Math.min(4, Math.floor(cyc(f, 24, gi * 5) / 4));
+      for (let i = 0; i < n; i++) { const x = sx + 1 + i * 2, y = sy + v[i]; if (i) line(x - 2, sy + v[i - 1], x, y, 'greenL'); px(x, y, 'teal'); }
+      R(sx + 1, sy + 6, 8, 1, 'screenL'); break; }
+    case 'bars': {
+      const cols = ['plum', 'rose', 'ochre', 'plum'];
+      for (let b = 0; b < 4; b++) { const h = 2 + cyc(Math.floor(f / 4) + b * 3 + gi, 5); R(sx + 1 + b * 2, sy + 7 - h, 1, h, cols[b]); }
+      break; }
+    case 'grid': {
+      for (let i = 0; i < 9; i++) R(sx + 1 + (i % 3) * 3, sy + 1 + Math.floor(i / 3) * 2, 2, 1, 'screenL');
+      const i = cyc(Math.floor(f / 3) + gi * 2, 9); R(sx + 1 + (i % 3) * 3, sy + 1 + Math.floor(i / 3) * 2, 2, 1, 'clay'); break; }
+    case 'play': {
+      px(sx+4, sy+1, 'glow'); R(sx+4, sy+2, 2, 1, 'glow'); R(sx+4, sy+3, 3, 1, 'glow'); R(sx+4, sy+4, 2, 1, 'glow'); px(sx+4, sy+5, 'glow');
+      R(sx, sy + 6, 10, 1, 'screenL'); R(sx, sy + 6, Math.round(cyc(f, 48, gi * 9) / 48 * 10), 1, 'rose'); break; }
+    case 'mail': {
+      R(sx+2, sy+2, 6, 4, 'glow'); px(sx+3, sy+3, 'ink2'); px(sx+6, sy+3, 'ink2'); R(sx+4, sy+4, 2, 1, 'ink2');
+      if (cyc(f, 16, gi * 4) < 8) px(sx + 8, sy + 1, 'clay'); break; }
+    case 'card': {
+      R(sx+1, sy+1, 8, 5, 'glow'); R(sx+2, sy+2, 4, 1, 'olive'); R(sx+2, sy+4, 3, 1, 'ink2');
+      if (cyc(f, 24, gi * 7) >= 12) { px(sx+6, sy+4, 'sage'); px(sx+7, sy+3, 'sage'); } break; }
+    case 'mega': {
+      R(sx+1, sy+3, 2, 2, 'red'); R(sx+3, sy+2, 1, 4, 'red'); R(sx+4, sy+1, 1, 6, 'red');
+      const w = Math.floor(cyc(f, 12) / 4); for (let k = 0; k <= w; k++) { px(sx + 6 + k, sy + 2 - (k ? 0 : 0), 'glow'); px(sx + 6 + k, sy + 5, 'glow'); px(sx + 7 + k, sy + 3 + (k % 2), 'glow'); }
+      break; }
+    case 'pie': {
+      const q = cyc(Math.floor(f / 6) + gi, 4), cols = ['blue', 'ochre', 'sage', 'clay'];
+      [[3,1],[6,1],[6,4],[3,4]].forEach(([x,y], i) => R(sx + x - (i === q ? 0 : 0), sy + y, 2, 2, i === q ? cols[i] : 'screenL'));
+      R(sx + 5, sy + 1, 1, 5, 'screen'); R(sx + 3, sy + 3, 5, 1, 'screen'); break; }
+    case 'route': {
+      const cx = sx + 7, cy = sy + 5, nodes = [[sx+1,sy+1],[sx+13,sy+1],[sx+1,sy+9],[sx+13,sy+9]];
+      nodes.forEach(([x,y]) => line(cx, cy, x, y, 'screenL'));
+      const k = cyc(Math.floor(f / 6), 4), [nx, ny] = nodes[k], u = cyc(f, 6) / 5;
+      px(Math.round(cx + (nx - cx) * u), Math.round(cy + (ny - cy) * u), 'clay');
+      nodes.forEach(([x,y], i) => px(x, y, i === k ? 'yellow' : 'glow')); R(cx - 1, cy - 1, 2, 2, 'clay'); break; }
+  }
+}
+
+// ---------- people ----------
+const SKINS = ['skin1', 'skin2', 'skin3', 'skin4'], HAIRS = ['hair1', 'hair2', 'hair3', 'hair4', 'hair5', 'hair1', 'hair2'];
+function person(cx, y, shirt, gi, f, opts = {}) {
+  const h = (gi * 37 + 11) % 97, skin = SKINS[h % 4], hair = HAIRS[(h >> 2) % 7], style = opts.style ?? (h >> 1) % 4;
+  // arms on the keyboard, typing in alternating rhythm
+  const a = cyc(f, 4, gi * 2) < 2 ? 1 : 0, b = 1 - a;
+  R(cx - 6, y + 6 - a, 2, 4, shirt); px(cx - 6, y + 5 - a, skin);
+  R(cx + 4, y + 6 - b, 2, 4, shirt); px(cx + 5, y + 5 - b, skin);
+  R(cx - 5, y + 7, 10, 8, shirt); R(cx - 4, y + 6, 8, 1, shirt);            // shoulders
+  R(cx - 2, y + 6, 4, 1, skin);                                              // neck
+  px(cx - 4, y + 3, skin); px(cx + 3, y + 3, skin);                          // ears
+  R(cx - 3, y, 6, 6, hair);                                                  // head from behind
+  if (style === 1) R(cx - 1, y - 2, 2, 2, hair);                             // bun
+  if (style === 2) { R(cx - 3, y + 6, 6, 3, hair); }                         // long hair
+  if (style === 3) { R(cx - 3, y - 1, 6, 3, opts.hat || 'clayD'); px(cx, y - 2, 'cream'); } // beanie
+  if (opts.headset) { R(cx - 4, y - 1, 8, 1, 'ink'); R(cx - 5, y + 2, 2, 3, 'ink'); px(cx - 5, y + 5, 'ink2'); px(cx - 4, y + 6, 'ink2'); }
+  // chair back covers the lower back
+  R(cx - 6, y + 13, 12, 1, 'ink'); R(cx - 5, y + 14, 10, 7, 'ink2'); R(cx - 4, y + 15, 8, 1, 'screenL');
+  R(cx - 1, y + 21, 2, 3, 'ink'); R(cx - 4, y + 24, 8, 1, 'ink'); R(cx - 6, y + 25, 12, 2, 'shadow');
+}
+function bubble(x, y, kind) {
+  R(x, y, 9, 7, 'white'); R(x, y, 9, 1, 'ink2'); R(x, y + 6, 9, 1, 'ink2'); R(x, y, 1, 7, 'ink2'); R(x + 8, y, 1, 7, 'ink2');
+  px(x + 2, y + 7, 'ink2');
+  if (kind === 0) { px(x + 2, y + 3, 'sage'); px(x + 3, y + 4, 'sage'); px(x + 4, y + 3, 'sage'); px(x + 5, y + 2, 'sage'); px(x + 6, y + 1, 'white'); }
+  if (kind === 1) { px(x + 3, y + 2, 'rose'); px(x + 5, y + 2, 'rose'); R(x + 3, y + 3, 3, 1, 'rose'); px(x + 4, y + 4, 'rose'); }
+  if (kind === 2) { R(x + 3, y + 1, 3, 3, 'yellow'); px(x + 4, y + 4, 'ink2'); px(x + 4, y + 5, 'ink2'); }
+  if (kind === 3) { R(x + 4, y + 1, 1, 3, 'clay'); px(x + 4, y + 5, 'clay'); }
+}
+
+// ---------- pods ----------
+function pod(p, f, hit) {
+  const { x, y, w, t } = p;
+  // hanging team sign with agent count
+  const lw = tw(t.n) + 8;
+  line(p.sx + 4, y - 4, p.sx + 4, y + 1, 'ink2'); line(p.sx + lw + 7, y - 4, p.sx + lw + 7, y + 1, 'ink2');
+  R(p.sx, y + 2, lw, 9, t.c); txt(t.n, p.sx + 4, y + 4, 'cream');
+  R(p.sx + lw + 2, y + 2, 9, 9, 'cream'); R(p.sx + lw + 2, y + 10, 9, 1, 'shadow'); txt(String(t.k), p.sx + lw + 5, y + 4, 'ink');
+  if (hit) { const sx = p.sx + lw + 12, sy = y; px(sx + 1, sy, 'yellow'); px(sx, sy + 1, 'yellow'); px(sx + 2, sy + 1, 'yellow'); px(sx + 1, sy + 2, 'yellow'); px(sx + 4, sy + 4, 'clay'); }
+  // desk
+  R(x + 5, y + 31, w - 10, 3, 'woodL'); R(x + 5, y + 34, w - 10, 5, 'wood'); R(x + 5, y + 39, w - 10, 1, 'woodD');
+  R(x + 7, y + 40, 2, 8, 'woodD'); R(x + w - 9, y + 40, 2, 8, 'woodD');
+  const n = t.k, slot = Math.min(22, Math.floor((w - 14) / n)), gx = x + Math.floor((w - slot * n) / 2);
+  for (let i = 0; i < n; i++) {
+    const cx = gx + slot * i + Math.floor(slot / 2), gi = p.g0 + i;
+    // monitor
+    R(cx - 6, y + 19, 12, 9, 'ink'); R(cx - 5, y + 20, 10, 7, 'screen'); screenArt(t.s, cx - 5, y + 20, f, gi);
+    R(cx - 1, y + 28, 2, 3, 'ink2'); R(cx - 3, y + 30, 6, 1, 'ink2');
+    // desk props
+    if (slot >= 20) {
+      const prop = gi % 4;
+      if (prop === 0) { R(cx + 7, y + 27, 3, 4, 'cream'); px(cx + 10, y + 28, 'cream'); for (let s = 0; s < 2; s++) { const sy = y + 25 - Math.floor(cyc(f, 12, s * 6 + gi) / 3); px(cx + 8 + cyc(Math.floor(f / 3) + s, 2), sy, 'white'); } }
+      if (prop === 1) { R(cx + 7, y + 28, 3, 3, 'pot'); px(cx + 7, y + 26, 'green'); px(cx + 8, y + 25, 'greenD'); px(cx + 9, y + 26, 'green'); px(cx + 8, y + 27, 'green'); }
+      if (prop === 2) { R(cx - 11, y + 29, 4, 2, 'white'); px(cx - 10, y + 29, 'shadow'); }
+    }
+    person(cx, y + 34, t.c, gi, f, { hat: t.c === 'clayD' ? 'ink2' : 'clayD' });
+    if (gi % 3 === 0 && cyc(f, N, gi * 5) < 9) bubble(cx + 1, y + 12, Math.floor(gi / 3) % 4);
+  }
+}
+
+function orchestrator(f) {
+  const { x, y, w, cx } = ORCH;
+  // rug
+  R(x + 34, y + 34, w - 68, 34, 'rug'); R(x + 34, y + 34, w - 68, 1, 'clayL'); R(x + 34, y + 67, w - 68, 1, 'clayL');
+  R(x + 34, y + 34, 1, 34, 'clayL'); R(x + w - 35, y + 34, 1, 34, 'clayL');
+  for (let i = 0; i < 18; i++) px(x + 44 + i * 9, y + 64, 'clayL');
+  // sign
+  const s = '/MARKETING  ORCHESTRATOR', lw = tw(s) + 10, sx = cx - Math.floor(lw / 2);
+  line(sx + 4, y - 4, sx + 4, y + 1, 'ink2'); line(sx + lw - 5, y - 4, sx + lw - 5, y + 1, 'ink2');
+  R(sx, y + 2, lw, 9, 'ink'); txt(s, sx + 5, y + 4, 'cream'); px(sx + lw - 4, y + 4, cyc(f, 8) < 4 ? 'clay' : 'ink');
+  // desk with three monitors
+  R(cx - 52, y + 31, 104, 3, 'woodL'); R(cx - 52, y + 34, 104, 5, 'wood'); R(cx - 52, y + 39, 104, 1, 'woodD');
+  R(cx - 50, y + 40, 2, 8, 'woodD'); R(cx + 48, y + 40, 2, 8, 'woodD');
+  [-26, 0, 26].forEach((dx, i) => {
+    const mx = cx + dx;
+    R(mx - 9, y + 16, 18, 13, 'ink'); R(mx - 8, y + 17, 16, 11, 'screen');
+    if (i === 1) screenArt('route', mx - 8, y + 17, f, 0);
+    if (i === 0) { for (let r = 0; r < 4; r++) R(mx - 7, y + 18 + r * 2 + 1, [10, 7, 12, 5][r], 1, r === cyc(Math.floor(f / 6), 4) ? 'clay' : 'screenL'); }
+    if (i === 2) { for (let r = 0; r < 3; r++) { R(mx - 7, y + 19 + r * 3, 2, 2, ['sage', 'yellow', 'clay'][r]); R(mx - 4, y + 19 + r * 3 + 1, 9, 1, 'glow'); } }
+    R(mx - 1, y + 29, 2, 2, 'ink2'); R(mx - 4, y + 30, 8, 1, 'ink2');
+  });
+  R(cx + 36, y + 27, 3, 4, 'clay'); px(cx + 39, y + 28, 'clay');            // clay mug
+  for (let s = 0; s < 2; s++) px(cx + 37 + cyc(Math.floor(f / 3) + s, 2), y + 25 - Math.floor(cyc(f, 12, s * 6) / 3), 'white');
+  R(cx - 44, y + 29, 6, 2, 'white'); R(cx - 43, y + 28, 6, 1, 'cream');      // brief stack
+  person(cx, y + 34, 'clay', 99, f, { headset: true, style: 0 });
+  // floor lamp and big plant at the edges of the rug
+  const sw = [0, 0, 1, 1, 0, 0, -1, -1][cyc(Math.floor(f / 2), 8)];
+  R(x + 14, y + 52, 10, 9, 'pot'); R(x + 13, y + 51, 12, 2, 'clayD');
+  R(x + 18 + sw, y + 30, 2, 21, 'greenD'); R(x + 14 + sw, y + 34, 4, 3, 'green'); R(x + 20 + sw, y + 30, 4, 3, 'green');
+  R(x + 13 + sw, y + 41, 5, 3, 'greenL'); R(x + 20 + sw, y + 38, 5, 3, 'green'); R(x + 16 + sw, y + 26, 4, 4, 'greenL');
+  R(x + w - 22, y + 18, 10, 6, 'yellow'); R(x + w - 21, y + 24, 8, 1, 'ochre'); R(x + w - 18, y + 25, 2, 34, 'ink2'); R(x + w - 22, y + 59, 10, 2, 'ink');
+  R(x + w - 23, y + 61, 12, 1, 'shadow');
+}
+
+// ---------- room ----------
+function room(f) {
+  // floor
+  R(0, 75, W, H - 75, 'floor');
+  for (let r = 0, yy = 86; yy < H; r++, yy += 12) { R(0, yy, W, 1, 'floorLine'); for (let xx = (r * 37) % 60; xx < W; xx += 60) R(xx, yy - 11, 1, 11, 'floorLine'); }
+  // wall
+  R(0, 0, W, 74, 'wall'); R(0, 60, W, 12, 'wall2'); R(0, 72, W, 3, 'woodD');
+  // string lights
+  const bulbs = ['clay', 'yellow', 'sage', 'blue', 'rose'];
+  for (let i = 0, xx = 4; xx < W; i++, xx += 12) {
+    const yy = 3 + (i % 2); line(xx, yy, xx + 12, 3 + ((i + 1) % 2), 'ink2');
+    const on = cyc(i + Math.floor(f / 4), 5);
+    R(xx, yy + 1, 2, 2, bulbs[on]); if (on === 1) px(xx - 1, yy + 2, 'glow');
+  }
+  // window with drifting clouds
+  R(10, 10, 68, 44, 'woodD'); R(12, 12, 64, 40, 'sky');
+  g.save(); g.beginPath(); g.rect(12, 12, 64, 40); g.clip();
+  R(12, 42, 64, 10, 'hill'); R(18, 36, 6, 6, 'skyD'); R(26, 32, 5, 10, 'skyD'); R(54, 34, 7, 8, 'skyD'); R(63, 38, 5, 4, 'skyD');
+  [[0, 20], [0.55, 26]].forEach(([ph, cy]) => { const cx = -10 + Math.round(((f / N + ph) % 1) * 96); R(cx, cy, 13, 3, 'white'); R(cx + 3, cy - 2, 6, 2, 'white'); });
+  g.restore();
+  R(43, 12, 2, 40, 'woodD'); R(12, 31, 64, 2, 'woodD'); R(8, 52, 72, 3, 'woodL');
+  const sw = [0, 0, 1, 1, 0, 0, -1, -1][cyc(Math.floor(f / 2), 8)];
+  R(62, 46, 9, 6, 'pot'); R(64 + sw, 40, 2, 6, 'green'); R(67, 37, 2, 9, 'greenD'); R(70 - sw, 41, 2, 5, 'green');
+  // clock (minute hand sweeps once per loop)
+  R(90, 14, 12, 16, 'ink2'); R(88, 16, 16, 12, 'ink2'); R(91, 15, 10, 14, 'cream'); R(89, 17, 14, 10, 'cream');
+  px(96, 16, 'ink2'); px(96, 28, 'ink2'); px(90, 22, 'ink2'); px(102, 22, 'ink2');
+  const a = f / N * Math.PI * 2; line(96, 22, 96 + Math.round(Math.sin(a) * 5), 22 - Math.round(Math.cos(a) * 5), 'ink'); line(96, 22, 99, 24, 'clay');
+  // poster
+  R(112, 12, 36, 32, 'ink2'); R(113, 13, 34, 30, 'clayL'); txt('BRAND/', 118, 17, 'ink'); txt('IS THE', 118, 24, 'ink'); txt('TRUTH', 120, 32, 'clayD');
+  // title banner
+  const T = 'MARKETING AGENT TEAM', tx = Math.floor((W - tw(T, 2)) / 2);
+  R(tx - 8, 10, tw(T, 2) + 16, 16, 'cream'); R(tx - 8, 25, tw(T, 2) + 16, 1, 'clayL'); txt(T, tx, 13, 'clay', 2);
+  const S = '36 AGENTS * 44 SKILLS * 1 ORCHESTRATOR'; txt(S, Math.floor((W - tw(S)) / 2), 31, 'ink2');
+  const S2 = 'BUILT WITH CLAUDE CODE'; txt(S2, Math.floor((W - tw(S2)) / 2), 40, 'clayD');
+  // whiteboard: funnel + growing line chart
+  R(334, 9, 90, 48, 'ink2'); R(335, 10, 88, 46, 'white');
+  [[26, 'clay'], [20, 'ochre'], [14, 'sage'], [8, 'teal']].forEach(([wd, c], i) => R(355 - wd / 2, 15 + i * 6, wd, 4, c));
+  txt('FUNNEL', 343, 45, 'ink2');
+  R(378, 16, 1, 29, 'ink2'); R(378, 44, 40, 1, 'ink2');
+  const pts = [[381, 40], [389, 36], [397, 37], [405, 28], [413, 22], [418, 16]], prog = Math.min(1, f / 32) * (pts.length - 1);
+  for (let i = 1; i < pts.length; i++) { if (i - 1 >= prog) break; const u = Math.min(1, prog - (i - 1)); const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; line(x0, y0, x0 + (x1 - x0) * u, y0 + (y1 - y0) * u, 'clay'); }
+  pts.forEach(([xx, yy], i) => { if (i <= prog) R(xx - 1, yy - 1, 2, 2, 'clayD'); });
+  R(338, 57, 82, 2, 'woodD'); R(346, 55, 5, 2, 'clay'); R(354, 55, 5, 2, 'blue'); R(362, 55, 5, 2, 'ink');
+  [[394, 47, 'yellow'], [403, 47, 'rose'], [412, 47, 'sage']].forEach(([xx, yy, c]) => R(xx, yy, 7, 6, c));
+  // shelf with books and the office cat
+  R(430, 44, 46, 3, 'woodD'); R(432, 47, 2, 4, 'woodD'); R(472, 47, 2, 4, 'woodD');
+  [['clay', 12], ['sage', 10], ['blue', 13], ['ochre', 9]].forEach(([c, h], i) => R(434 + i * 5, 44 - h, 4, h, c));
+  R(454, 40, 6, 4, 'cream'); R(455, 39, 4, 1, 'shadow');
+  const blink = cyc(f, 24) >= 22, wag = [0, 1, 2, 1][cyc(Math.floor(f / 3), 4)];
+  R(462, 36, 9, 8, 'ink'); R(463, 30, 7, 6, 'ink'); px(463, 29, 'ink'); px(469, 29, 'ink');
+  if (blink) { R(464, 32, 2, 1, 'ink2'); R(467, 32, 2, 1, 'ink2'); } else { px(465, 32, 'yellow'); px(467, 32, 'yellow'); }
+  px(466, 34, 'rose'); R(471, 42, 2, 1, 'ink'); R(472 + wag, 37, 1, 5, 'ink'); px(472 + wag, 36, 'ink');
+  R(440, 56, 26, 6, 'cream'); R(440, 61, 26, 1, 'shadow'); txt('SHIP!', 443, 57, 'clay');
+}
+
+function drawFrame(f) {
+  g.clearRect(0, 0, W, H);
+  room(f);
+  orchestrator(f);
+  const hits = new Set();
+  const planes = PLANES.map(pl => planeState(pl, f)).filter(Boolean);
+  planes.forEach(s => { if (s.landed) hits.add(s.p); });
+  PODS.forEach(p => pod(p, f, hits.has(p)));
+  planes.forEach(s => {
+    if (s.landed) return;
+    for (let k = 1; k <= 3; k++) { const pl = PLANES.find(q => PODS[q.pod] === s.p); const st = planeState({ ...pl, f0: pl.f0 + k }, f); if (st && !st.landed && st.u > 0 && k % 2) R(st.x - 10 * s.dir, st.y, 3, 1, 'clay'); }
+    const x = Math.round(s.x), y = Math.round(s.y), d = s.dir;
+    const PLANE = ['..WWW...', 'WWWWWWWK', '.ccWWW..', '..cc....'], col = { W: 'white', K: 'clay', c: 'clayD' };
+    PLANE.forEach((row, r) => [...row].forEach((ch, q) => { if (col[ch]) R(x + (q - 4) * 2 * d - (d < 0 ? 1 : 0), y + (r - 2) * 2, 2, 2, col[ch]); }));
+  });
+}
+
+// ---------- indexing + GIF encoding ----------
+const LUT = new Map(PAL.map((k, i) => { const h = P[k]; return [parseInt(h.slice(1), 16), i]; }));
+function indexFrame() {
+  const d = g.getImageData(0, 0, W, H).data, out = new Uint8Array(W * H);
+  for (let i = 0, j = 0; i < out.length; i++, j += 4) {
+    const key = (d[j] << 16) | (d[j + 1] << 8) | d[j + 2];
+    let v = LUT.get(key);
+    if (v === undefined) { // nearest palette color (should not happen: all drawing uses palette colors)
+      let best = 0, bd = 1e9; PAL.forEach((k, idx) => { const c = parseInt(P[k].slice(1), 16); const dr = (c >> 16) - d[j], dg = ((c >> 8) & 255) - d[j + 1], db = (c & 255) - d[j + 2]; const dd = dr * dr + dg * dg + db * db; if (dd < bd) { bd = dd; best = idx; } });
+      v = best; LUT.set(key, v);
+    }
+    out[i] = v;
+  }
+  return out;
+}
+function lzw(ind, minCode) {
+  const clear = 1 << minCode, eoi = clear + 1, out = [];
+  let size = minCode + 1, next = eoi + 1, table = new Map(), cur = 0, bits = 0;
+  const emit = c => { cur |= c << bits; bits += size; while (bits >= 8) { out.push(cur & 255); cur >>>= 8; bits -= 8; } };
+  emit(clear);
+  let pre = ind[0];
+  for (let i = 1; i < ind.length; i++) {
+    const k = ind[i], key = pre * 256 + k, c = table.get(key);
+    if (c !== undefined) { pre = c; continue; }
+    emit(pre);
+    if (next === 4096) { emit(clear); next = eoi + 1; size = minCode + 1; table = new Map(); }
+    else { if (next >= (1 << size)) size++; table.set(key, next++); }
+    pre = k;
+  }
+  emit(pre); emit(eoi);
+  if (bits > 0) out.push(cur & 255);
+  return out;
+}
+function encodeGif(frames) {
+  const OW = W * SCALE, OH = H * SCALE, bytes = [];
+  const w16 = v => bytes.push(v & 255, (v >> 8) & 255);
+  'GIF89a'.split('').forEach(c => bytes.push(c.charCodeAt(0)));
+  w16(OW); w16(OH); bytes.push(0xF5, 0, 0);                         // global color table, 64 entries
+  for (let i = 0; i < 64; i++) { const k = PAL[i]; const c = k ? parseInt(P[k].slice(1), 16) : 0; bytes.push(c >> 16, (c >> 8) & 255, c & 255); }
+  bytes.push(0x21, 0xFF, 11, ...'NETSCAPE2.0'.split('').map(c => c.charCodeAt(0)), 3, 1, 0, 0, 0); // loop forever
+  let prev = null;
+  frames.forEach(fr => {
+    let x0 = 0, y0 = 0, x1 = W - 1, y1 = H - 1;
+    if (prev) {
+      x0 = W; y0 = H; x1 = -1; y1 = -1;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (fr[y * W + x] !== prev[y * W + x]) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      if (x1 < 0) { x0 = y0 = x1 = y1 = 0; }
+    }
+    const rw = x1 - x0 + 1, rh = y1 - y0 + 1, ind = new Uint8Array(rw * SCALE * rh * SCALE);
+    for (let y = 0; y < rh * SCALE; y++) for (let x = 0; x < rw * SCALE; x++) {
+      const si = (y0 + (y / SCALE | 0)) * W + x0 + (x / SCALE | 0);
+      ind[y * rw * SCALE + x] = prev && fr[si] === prev[si] ? TRANSP : fr[si];
+    }
+    bytes.push(0x21, 0xF9, 4, prev ? 0x05 : 0x04); w16(DELAY); bytes.push(prev ? TRANSP : 0, 0);
+    bytes.push(0x2C); w16(x0 * SCALE); w16(y0 * SCALE); w16(rw * SCALE); w16(rh * SCALE); bytes.push(0);
+    bytes.push(6);
+    const data = lzw(ind, 6);
+    for (let i = 0; i < data.length; i += 255) { const chunk = data.slice(i, i + 255); bytes.push(chunk.length, ...chunk); }
+    bytes.push(0);
+    prev = fr;
+  });
+  bytes.push(0x3B);
+  return new Uint8Array(bytes);
+}
+function b64(u8) { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
+
+// ---------- modes ----------
+const hash = location.hash;
+if (PAL.length > 63) throw new Error('palette too large: ' + PAL.length);
+if (hash.startsWith('#live') || hash.startsWith('#frame')) {
+  const view = document.createElement('canvas'); view.width = W * SCALE; view.height = H * SCALE; document.body.appendChild(view);
+  const v = view.getContext('2d'); v.imageSmoothingEnabled = false;
+  let f = hash.startsWith('#frame') ? (parseInt(hash.split('=')[1]) || 0) : 0;
+  const show = () => { drawFrame(f); v.drawImage(cv, 0, 0, W * SCALE, H * SCALE); };
+  show();
+  if (hash.startsWith('#live')) setInterval(() => { f = (f + 1) % N; show(); }, DELAY * 10);
+} else {
+  const frames = [];
+  for (let f = 0; f < N; f++) { drawFrame(f); frames.push(indexFrame()); }
+  const gif = encodeGif(frames);
+  const pre = document.createElement('pre'); pre.id = 'gif'; pre.textContent = b64(gif); document.body.appendChild(pre);
+  const meta = document.createElement('pre'); meta.id = 'meta'; meta.textContent = 'bytes=' + gif.length + ' colors=' + PAL.length; document.body.appendChild(meta);
+}
+</script>
+</body></html>

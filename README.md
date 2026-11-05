@@ -1,5 +1,9 @@
 # Marketing Agent Team for Claude Code
 
+<p align="center">
+  <img src="assets/marketing-agent-office.gif" alt="Pixel-art office: 36 marketing agents at 11 team pods while the /marketing orchestrator sends them work" width="960">
+</p>
+
 A complete B2B marketing team that runs inside [Claude Code](https://claude.com/claude-code). It has **36 specialist agents in 11 categories, 44 playbook skills and an orchestrator**, plus scheduled automations and PowerShell pipelines for SEO reporting, task tracking, creatives and video.
 
 The repo is **brand-neutral**. You fill in your company's facts once in `brand/` and your team in `config/`, and every agent works from them. No agent invents product facts: anything that isn't in `brand/` gets flagged.
