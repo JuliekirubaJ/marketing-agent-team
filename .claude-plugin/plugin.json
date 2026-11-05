@@ -53,5 +53,6 @@
                    "./.claude/agents/strategy/product-marketer.md"
                ],
     "commands":  "./.claude/commands/",
-    "skills":  "./.claude/skills/"
+    "skills":  "./.claude/skills/",
+    "license":  "MIT"
 }

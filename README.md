@@ -212,3 +212,7 @@ inbox/                 drop folder for /brand-refresh
 - Claude Code (CLI or desktop app)
 - For the pipelines: Windows, PowerShell 5.1, Microsoft Office (Excel, Word, PowerPoint) and Microsoft Edge. Node.js and Python are not needed.
 - For SEO: a Google Cloud OAuth client with the Search Console and GA4 Data APIs enabled, and optionally PageSpeed, Ahrefs and Clicky keys.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
