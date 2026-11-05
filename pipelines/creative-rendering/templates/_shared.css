@@ -1,0 +1,76 @@
+/* Shared creative styles. Brand colours and fonts are CSS variables: set them once here
+   (values from brand/voice-and-tone.md or your brand guidelines) and every creative follows. */
+:root {
+  --brand-primary: #4F46E5;      /* <BRAND_PRIMARY> main accent: chips, highlights, CTA */
+  --brand-primary-deep: #312E81; /* <BRAND_PRIMARY_DEEP> dark end of gradients, end cards */
+  --brand-tint: #EEF0FF;         /* <BRAND_TINT> pale accent fill: highlight sweeps, icon tiles */
+  --ink: #16163A;                /* headline text */
+  --muted: #5E5E78;              /* body and secondary text */
+  --line: #DDDDF0;               /* hairlines, card borders */
+  --canvas-1: #F8F8FC;           /* background gradient start */
+  --canvas-2: #ECECF8;           /* background gradient end */
+  --card: #FFFFFF;
+  --good: #1F9D55;
+  --bad: #E5383B;
+  --font: "Segoe UI", "Inter", system-ui, sans-serif;
+  --font-heavy: "Segoe UI Black", "Segoe UI", system-ui, sans-serif;
+  --slide-w: 1080px;
+  --slide-h: 1350px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--canvas-1); font-family: var(--font); color: var(--ink); }
+
+/* One <section class="slide" id="sN"> per slide.
+   page.html#s2 shows only slide 2 (screenshots); no fragment shows all slides stacked (PDF print). */
+.slide {
+  width: var(--slide-w); height: var(--slide-h);
+  display: none; flex-direction: column; position: relative; overflow: hidden;
+  padding: 88px 84px 72px;
+  background: linear-gradient(160deg, var(--canvas-1), var(--canvas-2));
+}
+.slide:target { display: flex; }
+body:not(:has(.slide:target)) .slide { display: flex; }
+
+@page { size: 1080px 1350px; margin: 0; }
+@media print { .slide { break-after: page; } }
+
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 64px; }
+.chip {
+  display: inline-block; padding: 10px 22px; border-radius: 999px;
+  background: var(--brand-primary); color: #fff;
+  font-weight: 700; font-size: 22px; letter-spacing: .12em; text-transform: uppercase;
+}
+.logo { height: 44px; }
+.logo:not([src]), .logo[src=""] { display: none; }
+
+h1 { font-family: var(--font-heavy); font-size: 96px; line-height: 1.02; letter-spacing: -.02em; }
+h2 { font-size: 64px; line-height: 1.08; font-weight: 800; }
+.mark { background: linear-gradient(transparent 58%, var(--brand-tint) 58%); padding: 0 6px; }
+.accent { color: var(--brand-primary); }
+.sub { margin-top: 28px; font-size: 34px; line-height: 1.35; color: var(--muted); max-width: 860px; }
+
+.card {
+  background: var(--card); border-radius: 28px; padding: 40px 44px;
+  box-shadow: 0 18px 48px rgba(40, 40, 120, .12); border: 1px solid var(--line);
+}
+.cards { display: grid; gap: 28px; margin-top: 56px; }
+.card .n {
+  width: 64px; height: 64px; border-radius: 18px; background: var(--brand-tint); color: var(--brand-primary);
+  display: grid; place-items: center; font-weight: 800; font-size: 30px; margin-bottom: 18px;
+}
+.card h3 { font-size: 36px; margin-bottom: 8px; }
+.card p { font-size: 28px; line-height: 1.4; color: var(--muted); }
+
+.hero-img { width: 100%; border-radius: 20px; margin-top: 48px; box-shadow: 0 18px 48px rgba(40, 40, 120, .14); }
+.hero-img:not([src]), .hero-img[src=""] { display: none; }
+
+.end { background: linear-gradient(160deg, var(--brand-primary), var(--brand-primary-deep)); color: #fff; justify-content: center; text-align: center; }
+.end h2 { color: #fff; }
+.end .sub { color: rgba(255, 255, 255, .82); margin-left: auto; margin-right: auto; }
+.cta {
+  display: inline-block; margin-top: 56px; padding: 26px 48px; border-radius: 999px;
+  background: #fff; color: var(--brand-primary-deep); font-weight: 800; font-size: 34px;
+}
+.footer { position: absolute; left: 84px; right: 84px; bottom: 48px; font-size: 22px; color: var(--muted); display: flex; justify-content: space-between; }
+.end .footer { color: rgba(255, 255, 255, .7); }

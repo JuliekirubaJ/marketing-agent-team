@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{title}}</title>
+<link rel="stylesheet" href="_shared.css">
+<!-- Example 3-slide 4:5 carousel (1080x1350).
+     Render one slide:  render.ps1 -Html example-creative.html -Ids s1,s2,s3
+     Batch from a CSV:  batch-generate.ps1 -Briefs example-briefs.csv -Template example-creative.html -Png -Pdf
+     Double-brace column placeholders are filled by batch-generate.ps1; opened directly, they show as literal text. -->
+</head>
+<body>
+
+<section class="slide" id="s1">
+  <div class="topbar">
+    <span class="chip">{{series}}</span>
+    <img class="logo" src="{{logo}}" alt="">
+  </div>
+  <h1>{{hook_line1}}<br><span class="mark accent">{{hook_line2}}</span></h1>
+  <p class="sub">{{subtitle}}</p>
+  <img class="hero-img" src="{{hero}}" alt="">
+  <div class="footer"><span>{{series}}</span><span>1 / 3</span></div>
+</section>
+
+<section class="slide" id="s2">
+  <div class="topbar">
+    <span class="chip">{{series}}</span>
+    <img class="logo" src="{{logo}}" alt="">
+  </div>
+  <h2>{{title}}</h2>
+  <div class="cards">
+    <div class="card"><div class="n">1</div><h3>{{point1_title}}</h3><p>{{point1_text}}</p></div>
+    <div class="card"><div class="n">2</div><h3>{{point2_title}}</h3><p>{{point2_text}}</p></div>
+    <div class="card"><div class="n">3</div><h3>{{point3_title}}</h3><p>{{point3_text}}</p></div>
+  </div>
+  <div class="footer"><span>{{series}}</span><span>2 / 3</span></div>
+</section>
+
+<section class="slide end" id="s3">
+  <h2>{{end_title}}</h2>
+  <p class="sub">{{end_text}}</p>
+  <div><span class="cta">{{cta}}</span></div>
+  <div class="footer"><span>{{series}}</span><span>3 / 3</span></div>
+</section>
+
+</body>
+</html>

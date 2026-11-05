@@ -1,0 +1,5 @@
+site,keyword,cluster,type,target_url,baseline_impressions_90d,baseline_position_90d,current_top_url
+main,example product,brand,brand,https://www.example.com/,,,
+main,example category software,category,commercial,https://www.example.com/product/,,,
+main,how to do example task,how-to,content,https://www.example.com/blog/example-task/,,,
+main,best example tool for example platform,category,strategic,,,,

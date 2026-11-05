@@ -1,0 +1,35 @@
+Phase,Activity,DueOffset,Role,MatrixRow,Optional
+Planning & Setup,Get webinar content & finalize date,-28,Owner,yes,no
+Planning & Setup,Webinar graphic readiness,-21,Designer,yes,no
+Planning & Setup,Add webinar to website,-18,Web / CMS,yes,no
+Planning & Setup,Update webinar on home page,-18,Web / CMS,yes,no
+Planning & Setup,Update webinar on product pages,-18,Web / CMS,yes,no
+Planning & Setup,Update webinar popup,-18,Web / CMS,yes,no
+Planning & Setup,Schedule webinar in webinar platform,-21,Owner,yes,no
+Planning & Setup,Block panelists' calendars,-21,Owner,yes,no
+Planning & Setup,Dry run (if needed),-2,Speaker,yes,yes
+Planning & Setup,Check if webinar has polls,-3,Speaker,yes,no
+CRM & Tracking,Create CRM lists - Registrants,-14,Owner,yes,no
+CRM & Tracking,Create CRM lists - Attendees,1,Owner,yes,no
+CRM & Tracking,Create CRM lists - Did Not Attend,1,Owner,yes,no
+CRM & Tracking,Create CRM lists - Replay (clicks),5,Owner,yes,no
+CRM & Tracking,Create CRM lists - Replay (opens),5,Owner,yes,no
+CRM & Tracking,Create CRM lists - Webinar Opened,5,Owner,yes,no
+CRM & Tracking,Set up tracking URLs (UTMs),-18,Owner,yes,no
+Promotion,Webinar deck support & coordination,-5,Speaker,yes,no
+Promotion,Plan and create email campaigns,-18,Owner,yes,no
+Promotion,Prepare & schedule emails,-14,Owner,yes,no
+Promotion,LinkedIn campaign,-14,Owner,yes,no
+Promotion,Reddit campaign,-10,Owner,yes,no
+Promotion,YouTube campaign,-7,Owner,yes,no
+Webinar Execution,Live webinar support,0,Owner,yes,no
+Webinar Execution,On-the-day webinar website updates,0,Web / CMS,yes,no
+Webinar Execution,Send webinar recording for editing,1,Owner,yes,no
+Post-Webinar,Webinar snippets,2,Video Editor,yes,no
+Post-Webinar,Summary video readiness,5,Video Editor,yes,no
+Post-Webinar,Prepare webinar report,1,Owner,yes,no
+Post-Webinar,Send report to team,2,Owner,yes,no
+Post-Webinar,Update website with recording,1,Web / CMS,yes,no
+Post-Webinar,Send replay emails,1,Owner,yes,no
+Post-Webinar,Send replay data to sales,6,Owner,yes,no
+Post-Webinar,Companion page (summary + key takeaways + FAQ + resources),3,Owner,no,no

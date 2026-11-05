@@ -1,0 +1,3 @@
+site,prompt,cluster,intent,our_domains,competitors_to_watch
+main,best example category software,category,commercial,example.com,competitor-one.com;Competitor Two
+main,how do I do example task,how-to,informational,example.com,competitor-one.com;Competitor Two

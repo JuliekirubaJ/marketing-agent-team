@@ -1,0 +1,2 @@
+key,domain,ga4_property,gsc_property,clicky_site_id,notes
+main,www.example.com,123456789,sc-domain:example.com,,"Example row. key = short id used in folder names; ga4_property = numeric GA4 property ID; gsc_property = sc-domain:<domain> for a domain property or https://<host>/ for a URL-prefix property; clicky_site_id optional (its sitekey goes in keys.json)."

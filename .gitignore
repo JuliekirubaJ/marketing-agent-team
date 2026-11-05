@@ -1,0 +1,40 @@
+# Machine-specific Claude settings
+.claude/settings.local.json
+
+# Working data (lives under MARKETING_ROOT, never in git)
+/trackers/
+/campaigns/
+/webinars/
+/creatives/
+/videos/
+/seo/
+**/tracker-backups/
+
+# Office files and exports
+*.xlsx
+*.xlsm
+*.docx
+*.pptx
+*.pdf
+*.mp4
+*.mov
+*.vtt
+*.csv.bak
+~$*
+
+# Brand source material may be confidential: commit templates only
+brand/sources/*
+!brand/sources/.gitkeep
+inbox/*
+!inbox/README.md
+
+# Secrets (should live in %USERPROFILE%\.marketing-agent-team\, listed here as a safety net)
+keys.json
+*token*.json
+client_secret*.json
+.env
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store

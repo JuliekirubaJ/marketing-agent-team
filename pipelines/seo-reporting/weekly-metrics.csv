@@ -1,0 +1,21 @@
+group,metric,source_file,how_to_get
+Search performance,Organic Sessions,ga4-channels.csv or auto-metrics.json,"Automatic (fetch-google.ps1): GA4 Organic Search sessions for the week. If the site has no GA4 property, use Clicky searches from auto-metrics.json and label the source ""Clicky searches""."
+Search performance,Organic Clicks (GSC),gsc\Totals.csv,Automatic (fetch-google.ps1): total clicks for the week.
+Search performance,Impressions,gsc\Totals.csv,Automatic (fetch-google.ps1): total impressions for the week.
+Search performance,Avg. Position,gsc\Totals.csv,Automatic (fetch-google.ps1): average position for the week.
+Search performance,Keywords in Top 10,gsc\Queries.csv,Count of rows in gsc\Queries.csv with Position <= 10.
+Search performance,AI referrals (Clicky),auto-metrics.json,"Automatic (fetch-auto.ps1): Clicky traffic source ""AI"" (ChatGPT / Perplexity / Gemini visitors)."
+Search performance,AI Assistant sessions (GA4),ga4-ai-sources.csv,Automatic (fetch-google.ps1): sum of sessions in the GA4 AI Assistant channel.
+Search performance,New Backlinks,manual-inputs.csv,"MANUAL, optional: Ahrefs/Semrush > new backlinks, last 7 days."
+Search performance,Pages Indexed,gsc\index-summary.json,"Automatic when fetch-index.ps1 is run for the week (sitemap_indexed); otherwise manual from GSC > Indexing > Pages > Indexed."
+Technical SEO health,4xx / Broken Pages,gsc\index-summary.json,Automatic when fetch-index.ps1 is run (not_found_404); otherwise GSC > Indexing > Pages > Not found (404) + other 4xx.
+Technical SEO health,5xx Server Errors,gsc\index-summary.json,Automatic when fetch-index.ps1 is run (server_error_5xx); otherwise GSC > Indexing > Pages > Server error (5xx).
+Technical SEO health,301 Redirected Pages,gsc\index-summary.json,Automatic when fetch-index.ps1 is run (redirect); otherwise GSC > Indexing > Pages > Page with redirect.
+Technical SEO health,Redirects Required,manual-inputs.csv,Count of 404 URLs that have a sensible 301 target (the agent proposes the map).
+Technical SEO health,Noindex Pages,gsc\index-summary.json,Automatic when fetch-index.ps1 is run (noindex); otherwise GSC > Indexing > Pages > Excluded by 'noindex' tag.
+Core Web Vitals,CWV - Good URLs,auto-metrics.json,"Automatic (fetch-auto.ps1, CrUX): pages with field data minus failing pages; otherwise GSC > Core Web Vitals > Good URLs."
+Core Web Vitals,CWV - Poor URLs,auto-metrics.json,"Automatic (fetch-auto.ps1, CrUX): CWV mobile/desktop issues; otherwise GSC > Core Web Vitals > Poor URLs."
+Core Web Vitals,Pages with CLS,manual-inputs.csv,GSC > Core Web Vitals > CLS issue URL count.
+Core Web Vitals,Pages with LCP,manual-inputs.csv,GSC > Core Web Vitals > LCP issue URL count.
+Core Web Vitals,Pages with INP issues,manual-inputs.csv,GSC > Core Web Vitals > INP issue URL count.
+Core Web Vitals,Need improvement URLs,manual-inputs.csv,GSC > Core Web Vitals > Need improvement URLs.
