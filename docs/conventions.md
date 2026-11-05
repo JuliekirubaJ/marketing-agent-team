@@ -51,3 +51,34 @@ Claude Code subagent markdown, with frontmatter `name`, `description`, `tools` (
 ## 6. Platform
 
 The pipelines target Windows, PowerShell 5.1, Microsoft Office (Excel, Word and PowerPoint through COM) and Microsoft Edge (headless rendering). Node.js and Python are not required. Keep script string literals plain ASCII, because PowerShell 5.1 mis-reads non-ASCII characters in UTF-8 files that have no BOM.
+
+## 7. Agents are roles, skills are procedures
+
+- **Agent** = a role with judgement (who). Agents live in `.claude/agents/<category>/<name>.md`. Subfolders are fine: Claude Code scans `.claude/agents/` recursively.
+- **Skill** = a repeatable procedure (how). Skills live one level deep: `.claude/skills/<skill-name>/SKILL.md`. Nested skill folders are NOT discovered.
+- Every agent lists, in a "Skills I use" section, the 3-6 skills it relies on, and names the agents it hands off to and receives from.
+
+### Frontmatter must be valid YAML
+
+Claude Code silently skips an agent or skill whose frontmatter does not parse. Rules:
+- Wrap `description` in double quotes whenever it contains `: `, `#`, or starts with `[`, `{`, `"`, `'`, `>`, `|`, `*`, `&`, `!`, `%` or `@`. When in doubt, quote it, and escape any inner double quotes as `\"`.
+- Line 1 is `---`. `name` (kebab-case, same as the file or folder name) and `description` are required.
+
+### Skill format (keep each skill to roughly 1-2 pages)
+
+```
+---
+name: <skill-name>
+description: "<what it does>. Use when <triggers>."
+---
+
+# <Title>
+
+## When to use
+## Inputs            (what to ask the user for, and which brand/ and config/ files to read)
+## Steps             (numbered, concrete)
+## Output template   (the exact structure to return)
+## Quality checks    (glossary terms, claims checked against brand/claims-and-proof.md, plain prose, no invented numbers)
+```
+
+Write all text from scratch. Do not copy text from other repositories, even MIT-licensed ones.

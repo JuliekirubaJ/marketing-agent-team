@@ -1,0 +1,12 @@
+{
+  "name": "marketing-agent-team",
+  "owner": { "name": "JuliekirubaJ" },
+  "description": "B2B marketing agent team for Claude Code: agents, skills, commands and automation prompts",
+  "plugins": [
+    {
+      "name": "marketing-agent-team",
+      "source": "./",
+      "description": "Brand-neutral B2B marketing agent team for Claude Code"
+    }
+  ]
+}

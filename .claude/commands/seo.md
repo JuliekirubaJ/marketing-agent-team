@@ -1,13 +1,23 @@
 ---
-description: SEO / AEO / GEO for the sites in config/sites.csv - monthly report, weekly rankings + AEO, keyword research, improvements
-argument-hint: [request, e.g. "monthly report all sites" | "weekly rankings main" | "optimise /pricing/" | "keyword research for <topic>"]
+description: "SEO / AEO / GEO for the sites in config/sites.csv - monthly report, weekly rankings + AEO, keyword research, technical audits, AI search visibility, content refreshes and improvements"
+argument-hint: '[request, e.g. "monthly report all sites" | "weekly rankings main" | "optimise /pricing/" | "keyword research for <topic>"]'
 ---
 
 Route the request:
 
-- Reports, rankings, AEO checks, technical / on-page / AEO / GEO fixes for any site in `config/sites.csv` -> `website-seo-specialist`. It handles every site; for "all sites" or no site named, give it all site keys in one request.
-- Keyword research, keyword clustering, content briefs -> `seo-strategist`.
-- A request that needs both (for example "find keywords and fix the page") -> `seo-strategist` first, then `website-seo-specialist` with its output.
+| Request | Agent |
+|---|---|
+| Monthly report, weekly rankings + AEO report, quick on-page fixes for any site in `config/sites.csv` | `website-seo-specialist`. It handles every site; for "all sites" or no site named, give it all site keys in one request. |
+| Keyword research, keyword clustering, briefs for new content, comparison-page briefs | `seo-strategist` |
+| Technical audits: crawlability, indexation, Core Web Vitals, sitemaps, robots.txt, canonicals, redirects, hreflang, schema validation, JS rendering, site migrations | `technical-seo-auditor` |
+| AI search (AEO / GEO) deep work: visibility in ChatGPT, Perplexity, Gemini, AI Overviews or Copilot, prompt-list upkeep, entity consistency, llms.txt, third-party citation strategy | `ai-search-optimizer` |
+| Existing content: decay, refreshes, cannibalization, internal linking, topic clusters and pillar pages, pruning | `content-seo-specialist` |
+
+Combined requests run in sequence, passing each agent's output to the next:
+- "Find keywords and fix the page" -> `seo-strategist`, then `website-seo-specialist`.
+- "Why did traffic drop?" -> `website-seo-specialist` for the data, then `technical-seo-auditor` or `content-seo-specialist` depending on whether the cause is technical or content.
+- "We're launching a new site / moving URLs" -> `technical-seo-auditor` (migration checklist), then `website-seo-specialist` to track the move.
+- "Why does AI recommend a competitor?" -> `ai-search-optimizer`, then `content-seo-specialist` for the pages it names.
 
 Pass along the owner's request verbatim, today's date, the report month (YYYY-MM; for a month-end run, the month that is ending) or week label (the Monday), the site keys in scope, and this session's scratchpad path for temp files:
 

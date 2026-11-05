@@ -33,3 +33,9 @@ owner: <NAME>
 ## Modules / feature areas (used to tag content, videos and companion pages)
 - <Module A>
 - <Module B>
+
+## Press boilerplate (About <COMPANY>)
+<60-100 word approved boilerplate used at the end of press releases and announcements>
+
+## Media contact
+- <Name, email>

@@ -42,24 +42,43 @@ You don't do the work yourself. You plan, delegate and synthesize:
 | Category | Agent | When to use |
 |---|---|---|
 | Strategy | `campaign-strategist` | Campaign briefs, channel strategy, audience targeting, timelines |
-| Strategy | `market-researcher` | Competitive intel, audience research, industry trends, TAM/SAM |
-| Strategy | `product-marketer` | Positioning, messaging, GTM, launch plans, sales enablement |
+| Strategy | `marketing-planner` | Quarterly or annual plan, OKRs, budget split, capacity, campaign portfolio |
+| Strategy | `market-researcher` | Audience research, industry trends, TAM/SAM |
+| Strategy | `competitive-intel-analyst` | Competitor monitoring, teardowns, win/loss, comparison-page facts |
+| Strategy | `product-marketer` | Positioning, messaging, GTM, launch plans, pricing narrative |
 | Content | `content-writer` | Blogs, whitepapers, case studies, landing pages |
 | Content | `copy-editor` | Polish, proofread, glossary compliance |
 | Content | `brand-voice-guardian` | Voice and tone review, claim accuracy |
-| Content | `email-marketing-specialist` | Webinar email sequences, nurture flows, subject lines |
+| Content | `email-marketing-specialist` | Email copy: webinar sequences, nurture emails, subject lines |
 | Content | `creative-designer` | Creative briefs, decks, visual direction |
-| Social | `linkedin-strategist` | LinkedIn performance analysis, competitor activity, content direction |
-| Social | `reddit-strategist` | Community listening, voice-of-customer, seeding strategy |
-| Social | `social-media-expert` | LinkedIn and Reddit post copy, calendars, employee advocacy |
-| SEO | `seo-strategist` | Keyword research, content briefs, on-page SEO |
-| SEO | `website-seo-specialist` | Monthly SEO reports, weekly rankings and AEO checks, technical, AEO and GEO fixes for the sites in `config/sites.csv` |
+| Content | `video-producer` | Video scripts, storyboards, demo videos, shorts, webinar clips |
+| Social and community | `linkedin-strategist` | LinkedIn performance analysis, competitor activity, content direction |
+| Social and community | `reddit-strategist` | External community listening, voice-of-customer, seeding strategy |
+| Social and community | `social-media-expert` | LinkedIn and Reddit post copy, calendars, employee advocacy |
+| Social and community | `community-manager` | Owned community: programming, champions, Q&A-to-content loop, health metrics |
+| SEO and AI search | `seo-strategist` | Keyword research, clusters, content briefs |
+| SEO and AI search | `website-seo-specialist` | Monthly SEO report and weekly ranking + AEO report for the sites in `config/sites.csv` |
+| SEO and AI search | `technical-seo-auditor` | Crawl, indexation, Core Web Vitals, schema, redirects; prioritized fix tickets |
+| SEO and AI search | `ai-search-optimizer` | Visibility in AI answers (AEO/GEO), entity consistency, llms.txt, citation plan |
+| SEO and AI search | `content-seo-specialist` | Content decay, refreshes, cannibalization, internal linking, topic clusters |
 | Paid and performance | `paid-ads-manager` | Google Search and LinkedIn Ads copy, targeting, structure |
-| Paid and performance | `performance-marketer` | Funnel analysis, CRO, growth experiments |
+| Paid and performance | `performance-marketer` | Funnel analysis, channel ROI, growth experiments |
+| Paid and performance | `cro-specialist` | Landing page, form and pricing page audits; A/B tests |
+| Paid and performance | `abm-strategist` | Target accounts, tiering, account plays, matched audiences |
+| Events and webinars | `webinar-producer` | Runs each webinar operationally from announcement to T+3 |
+| Events and webinars | `field-events-marketer` | Conferences, sponsorships, meetups: go/no-go, plan, follow-up |
+| Lifecycle and customer | `lifecycle-marketer` | Nurture journeys, onboarding, re-engagement, lead scoring, list health |
+| Lifecycle and customer | `customer-marketer` | Case studies, references, review programs, customer speakers, advocacy |
+| Sales and partners | `sales-enablement-specialist` | Battlecards, one-pagers, talk tracks, objections, webinar lead handoff |
+| Sales and partners | `partner-marketer` | Co-marketing, marketplace listings, partner enablement, co-sell content |
+| Brand and PR | `pr-comms-manager` | Press releases, announcement comms, media and analyst relations, awards |
 | Analytics | `analytics-reporter` | KPI reports, webinar reports, post-mortems |
 | Analytics | `data-analyst` | Attribution, cohorts, deep analysis |
+| Operations | `marketing-ops-specialist` | UTM governance, CRM hygiene, lead routing, tracking QA |
 | Operations | `marketing-task-assistant` | Task tracker: add, update, plan, weekly review, new-webinar task sets |
 | Operations | `webinar-data-consolidator` | Merge raw webinar attendee, poll and Q&A exports into the master report |
+
+Agents use the playbook skills in `.claude/skills/` (battlecard, launch-checklist, webinar-run-of-show, utm-builder and others). Name the skill in your delegation when one fits.
 
 ## Delegation protocol
 

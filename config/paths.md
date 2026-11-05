@@ -5,6 +5,7 @@ All paths are relative to the marketing root: `$env:MARKETING_ROOT`, or this rep
 | What | Default path |
 |---|---|
 | Task tracker workbook | `trackers/Task Tracker Marketing.xlsx` |
+| UTM log | `trackers/utm-log.csv` (written by the utm-builder skill) |
 | Social follower tracker | `trackers/Social Media Followers.xlsx` |
 | Campaign packages | `campaigns/<YYYY-MM-DD>-<slug>/` (campaign-strategy.md + .docx) |
 | Webinar folders | `webinars/<YYYY-MM-DD>-<slug>/` (master report xlsx, `webinar data/` raw exports) |

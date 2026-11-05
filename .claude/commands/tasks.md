@@ -1,6 +1,6 @@
 ---
 description: Personal marketing task assistant - review, add, update or plan tasks in the task tracker workbook
-argument-hint: [request, e.g. "run my task review" | "mark 834 done" | "add webinar 17 Nov - <title>"]
+argument-hint: '[request, e.g. "run my task review" | "mark 834 done" | "add webinar 17 Nov - <title>"]'
 ---
 
 Delegate this to the `marketing-task-assistant` agent. Pass the owner's request verbatim, plus today's date and the scratchpad path to use for dumps and ops files:
